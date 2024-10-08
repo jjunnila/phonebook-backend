@@ -39,6 +39,43 @@ app.get('/api/persons/:id', (request, response) => {
         }
     })
 
+app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    persons = persons.filter(person => person.id !== id)
+
+    response.status(204).end()
+    })
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    if (!body.name){
+        return response.status(400).json({ 
+        error: 'name missing' 
+        })
+    } 
+    if (!body.number){
+        return response.status(400).json({ 
+        error: 'number missing' 
+        })
+    } 
+    if (persons.find(person => person.name === body.name)){
+        return response.status(400).json({ 
+        error: 'name must be unique' 
+        })
+    } 
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: Math.floor(Math.random() * 9999).toString()
+    }
+
+    persons = persons.concat(person)
+
+    response.json(person)
+    })
+
 app.get('/info', (request, response) => {
     const text = `<div>Phonebook has info for ${persons.length} people.</div>
         <div>${new Date(Date.now()).toString()}</div>`
